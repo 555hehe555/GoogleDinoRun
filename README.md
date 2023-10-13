@@ -1,0 +1,2 @@
+# GoogleDinoRun
+my python progek
