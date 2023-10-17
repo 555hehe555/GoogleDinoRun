@@ -4,6 +4,7 @@ import time
 import sys
 
 pygame.init()
+pygame.mixer.init()
 
 SCREEN_WIDTH = 750
 SCREEN_HEIGHT = 500
@@ -25,6 +26,12 @@ sky_img = pygame.transform.scale(sky_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 restart_img = pygame.image.load("restart.png")
 pause_img = pygame.image.load("pause.png")
 resume_img = pygame.image.load("enter.png")
+# music
+pygame.mixer.music.load("./jamp.mp3")
+pygame.mixer.music.play()
+
+jump_sound = pygame.mixer.Sound("./jamp.mp3")
+run_sound = pygame.mixer.Sound("./run.mp3")
 
 def draw_text(text, size, color, x, y, align="topleft"):
     font = pygame.font.SysFont('Arial', size)
@@ -99,6 +106,7 @@ class Dinosaur:
         if not self.jumping:
             self.velocity = -15
             self.jumping = True
+            jump_sound.play()
 
 class Cactus:
     def __init__(self, x, image, speed):
@@ -144,7 +152,7 @@ def draw_pause_screen():
         paused = True
 
 def draw_countdown():
-    global countdown_timer, paused, game_over
+    global countdown_timer, paused, game_over, pause_timer
     mw.blit(darken_surface, (0, 0))
     draw_text(str(int(countdown_timer) + 1), 100, (255, 0, 0), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, align="center")
     countdown_timer -= 1 / 60
@@ -234,7 +242,12 @@ while not pygame.key.get_pressed()[pygame.K_ESCAPE]:
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
+            run_sound.stop()
             dinosaur.jump()
+
+        if not dinosaur.jumping:
+            print(dinosaur.jumping)
+            run_sound.play()
 
         dinosaur.update()
         for cactus in cacti:
