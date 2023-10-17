@@ -197,7 +197,7 @@ def draw_restart_screen():
     draw_text("Game Over", 50, (83, 83, 83), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, align="center")
     mw.blit(restart_img, (SCREEN_WIDTH // 2 - restart_img.get_width() // 2, SCREEN_HEIGHT // 2 + 50))
 restart_timer = 0
-
+#srhilhil
 while not pygame.key.get_pressed()[pygame.K_ESCAPE]:
     mw.blit(sky_img, (0, 0))
     mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
@@ -216,6 +216,7 @@ while not pygame.key.get_pressed()[pygame.K_ESCAPE]:
                     resume_timer = 3
                 else:
                     show_countdown = True
+
 
     handle_resume_input()
 
