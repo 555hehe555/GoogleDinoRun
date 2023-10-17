@@ -17,21 +17,19 @@ pygame.display.set_caption("Google Dino Run")
 mw.fill(back)
 clock = pygame.time.Clock()
 
-dinosaur_img = pygame.image.load("dino.png")
-cactus_img = pygame.image.load("cactus_bigpng.png")
-small_cactus_img = pygame.image.load("cactus_smol.png")
-sand_img = pygame.image.load("sand.png")
-sky_img = pygame.image.load("sky.png")
+dinosaur_img = pygame.image.load("./imegs/dino/dino.png")
+cactus_img = pygame.image.load("./imegs/cactus/cactus_big.png")
+small_cactus_img = pygame.image.load("./imegs/cactus/cactus_smol.png")
+sand_img = pygame.image.load("./imegs/textures/sand.png")
+sky_img = pygame.image.load("./imegs/textures/sky.png")
 sky_img = pygame.transform.scale(sky_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-restart_img = pygame.image.load("restart.png")
-pause_img = pygame.image.load("pause.png")
-resume_img = pygame.image.load("enter.png")
-# music
-pygame.mixer.music.load("./jamp.mp3")
-pygame.mixer.music.play()
+restart_img = pygame.image.load("./imegs/buttons/restart.png")
+pause_img = pygame.image.load("./imegs/buttons/pause.png")
+resume_img = pygame.image.load("./imegs/buttons/enter.png")
 
-jump_sound = pygame.mixer.Sound("./jamp.mp3")
-run_sound = pygame.mixer.Sound("./run.mp3")
+# music
+jump_sound = pygame.mixer.Sound("./sounds/jamp.mp3")
+run_sound = pygame.mixer.Sound("./sounds/run.mp3")
 
 def draw_text(text, size, color, x, y, align="topleft"):
     font = pygame.font.SysFont('Arial', size)
