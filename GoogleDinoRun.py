@@ -29,40 +29,17 @@ resume_img = pygame.image.load("./imegs/buttons/enter.png")
 
 # music
 jump_sound = pygame.mixer.Sound("./sounds/jamp.mp3")
-run_sound = pygame.mixer.Sound("./sounds/run.mp3")
+run_sound = pygame.mixer.Sound("./sounds/run_test.mp3")
+background_sound = pygame.mixer.Sound("./sounds/portal_radio_tune.mp3")
+jump_sound.set_volume(0.3)
+background_sound.set_volume(0.1)
 
 def draw_text(text, size, color, x, y, align="topleft"):
     font = pygame.font.SysFont('Arial', size)
     label = font.render(text, True, color)
     text_rect = label.get_rect(**{align: (x, y)})
     mw.blit(label, text_rect)
-Comic_Sans_MS_50 = pygame.font.SysFont('Comic Sans MS', 50)
 
-# class Menu:
-#     def __init__(self):
-#         self._option_surfaces = []
-#         self._callbacks = []
-#         self._current_option_index = 0
-#
-#     def append_option(self, option, callback):
-#         self._option_surfaces.append(Comic_Sans_MS_50.render(option, True, (255, 255, 255)))
-#         self._callbacks.append(callback)
-#
-#     def switch(self, direction):
-#         self._current_option_index = max(0, min(self._current_option_index + direction, len(self._option_surfaces) - 1))
-#
-#     def select(self):
-#         self._callbacks[self._current_option_index]()
-#
-#     def draw(self, surf, x, y, option_y_padding):
-#         for i, option in enumerate(self._option_surfaces):
-#             option_rect = option.get_rect()
-#             option_rect.topleft = (x, y + i * option_y_padding)
-#             if i == self._current_option_index:
-#                 pygame.draw.rect(surf, (9, 100, 0), option_rect)
-#             surf.blit(option, option_rect)
-#
-# menu = Menu()
 
 # Функція для початку гри
 def start_game():
@@ -203,7 +180,7 @@ def draw_restart_screen():
     draw_text("Game Over", 50, (83, 83, 83), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, align="center")
     mw.blit(restart_img, (SCREEN_WIDTH // 2 - restart_img.get_width() // 2, SCREEN_HEIGHT // 2 + 50))
 restart_timer = 0
-#srhilhil
+
 while not pygame.key.get_pressed()[pygame.K_ESCAPE]:
     mw.blit(sky_img, (0, 0))
     mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
@@ -239,12 +216,13 @@ while not pygame.key.get_pressed()[pygame.K_ESCAPE]:
             next_cactus_time = random.randint(60, 120)
 
         keys = pygame.key.get_pressed()
+
+
         if keys[pygame.K_SPACE]:
             run_sound.stop()
             dinosaur.jump()
 
-        if not dinosaur.jumping:
-            print(dinosaur.jumping)
+        if not dinosaur.jumping and run_sound.get_num_channels() == 0:
             run_sound.play()
 
         dinosaur.update()
@@ -265,6 +243,7 @@ while not pygame.key.get_pressed()[pygame.K_ESCAPE]:
         if keys[pygame.K_SPACE] and restart_timer <= 0:
             start_game()
             restart_timer = restart_delay
+            background_sound.stop()
 
     if restart_timer > 0:
         restart_timer -= 1 / 60
@@ -274,10 +253,15 @@ while not pygame.key.get_pressed()[pygame.K_ESCAPE]:
 
     if paused:
         draw_pause_screen()
+        if background_sound.get_num_channels() == 0:
+            background_sound.play()
     elif not game_over:
         draw_text(f"Score: {score}", 20, (83, 83, 83), 67, 10, align="topright")
         draw_text(f"High Score: {high_score}", 20, (83, 83, 83), 10, 30, align="topleft")
         mw.blit(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10, 10))
+
+    if not paused:
+        background_sound.stop()
 
     pygame.display.flip()
     clock.tick(60)
