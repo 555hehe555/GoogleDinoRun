@@ -1,2 +1,2 @@
 # GoogleDinoRun
-my python progek
+my python project

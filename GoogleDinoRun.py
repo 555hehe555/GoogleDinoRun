@@ -45,12 +45,17 @@ def draw_text(text, size, color, x, y, align="topleft"):
 def start_game():
     global game_over, dinosaur, cacti, score, start_time
 
+    # Зберегти початкову позицію динозавра
+    initial_dinosaur_x = 10
+    initial_dinosaur_y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
+
     # Ініціалізуємо гру знову
-    dinosaur = Dinosaur(10, SCREEN_HEIGHT - GROUND_HEIGHT - 40)
+    dinosaur = Dinosaur(initial_dinosaur_x, initial_dinosaur_y)
     cacti = []
     score = 0
     start_time = time.time()
     game_over = False
+
 
 # menu.append_option('Start', start_game)
 # menu.append_option('Quit', quit)
@@ -104,7 +109,6 @@ resume_timer = 0
 paused = False
 pause_timer = 0
 pause_cooldown = False
-countdown_timer = 0
 
 darken_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 darken_surface.set_alpha(128)
@@ -215,6 +219,7 @@ while not pygame.key.get_pressed()[pygame.K_ESCAPE]:
             spawn_counter = 0
             next_cactus_time = random.randint(60, 120)
 
+
         keys = pygame.key.get_pressed()
 
 
@@ -244,6 +249,10 @@ while not pygame.key.get_pressed()[pygame.K_ESCAPE]:
             start_game()
             restart_timer = restart_delay
             background_sound.stop()
+            # Після рестарту гри
+            game_over = False
+            dinosaur.x = 10  # Початкова позиція динозавра
+            dinosaur.y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
 
     if restart_timer > 0:
         restart_timer -= 1 / 60
@@ -256,7 +265,13 @@ while not pygame.key.get_pressed()[pygame.K_ESCAPE]:
         if background_sound.get_num_channels() == 0:
             background_sound.play()
     elif not game_over:
-        draw_text(f"Score: {score}", 20, (83, 83, 83), 67, 10, align="topright")
+        score_x = 0
+        if score_x <= 10:
+            score_x = 77
+        elif score <= 100:
+            score_x =87
+
+        draw_text(f"Score: {score}", 20, (83, 83, 83), score_x, 10, align="topright")
         draw_text(f"High Score: {high_score}", 20, (83, 83, 83), 10, 30, align="topleft")
         mw.blit(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10, 10))
 
