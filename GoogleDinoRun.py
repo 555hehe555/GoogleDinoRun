@@ -17,7 +17,7 @@ pygame.display.set_caption("Google Dino Run")
 mw.fill(back)
 clock = pygame.time.Clock()
 
-dinosaur_img = pygame.image.load("./imegs/dino/dino.png")
+dinosaur_img = pygame.image.load("./imegs/dino/dino_c.png")
 cactus_img = pygame.image.load("./imegs/cactus/cactus_big.png")
 small_cactus_img = pygame.image.load("./imegs/cactus/cactus_smol.png")
 sand_img = pygame.image.load("./imegs/textures/sand.png")
