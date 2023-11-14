@@ -11,7 +11,7 @@ GROUND_HEIGHT = 30
 SAND_HEIGHT = 10
 font1 = ".\Press_Start_2P\PressStart2P-Regular.ttf"
 
-# Load images
+# Load imagesm
 dinosaur_img = pygame.image.load("./imegs/dino/dino_k.png")
 sand_img = pygame.image.load("./imegs/textures/sand.png")
 sky_img = pygame.image.load("./imegs/textures/sky.png")
@@ -37,7 +37,7 @@ class Menu:
         self._current_option_index = 0
 
     def append_option(self, option, callback):
-        option_surface = pygame.font.Font(font1, 40).render(option, True, (255, 255, 255))
+        option_surface = pygame.font.Font(font1, 20).render(option, True, (255, 255, 255))
         self._options.append(option_surface)
         self._callbacks.append(callback)
 

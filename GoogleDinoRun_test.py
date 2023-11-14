@@ -169,7 +169,7 @@ restart_timer = 0
 
 show_menu = True
 def game_cicle():
-    global show_menu, game_on
+    global show_menu, game_on, score
     show_menu = False
     while not pygame.key.get_pressed()[pygame.K_ESCAPE] and game_on:
         mw.blit(sky_img, (0, 0))
@@ -190,11 +190,19 @@ def game_cicle():
                         resume_timer = 3
                     else:
                         show_countdown = True
+
                 if event.key == pygame.K_m:
                     from menu import menu_run
-                    print(game_on) ###
+                    print(game_on)
+                    print(2)
                     menu_run()
                     game_on = False
+
+
+
+
+
+
 
         handle_resume_input()
 
@@ -261,6 +269,7 @@ def game_cicle():
                 score_x = 137
             elif score <= 100:
                 score_x =247
+
 
             draw_text(f"Score: {score}", 15, (83, 83, 83), score_x, 10, align="topright")
             draw_text(f"High Score: {high_score}", 15, (83, 83, 83), 10, 30, align="topleft")
