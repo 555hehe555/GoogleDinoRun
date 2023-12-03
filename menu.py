@@ -16,8 +16,8 @@ dinosaur_img = pygame.image.load("./imegs/dino/dino_k.png")
 sand_img = pygame.image.load("./imegs/textures/sand.png")
 sky_img = pygame.image.load("./imegs/textures/sky.png")
 sky_img = pygame.transform.scale(sky_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-musik_on_img = pygame.image.load("./imegs/buttons/pause.png")
-musik_off_img = pygame.image.load("./imegs/buttons/dth.png")
+musik_on_img = pygame.image.load("./imegs/buttons/musik_on.png")
+musik_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
 
 # Background color and window initialization
 background = (153, 0, 153)

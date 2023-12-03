@@ -12,8 +12,6 @@ GROUND_HEIGHT = 30
 SAND_HEIGHT = 10
 font1 = ".\Press_Start_2P\PressStart2P-Regular.ttf"
 
-
-
 dinosaur_img = pygame.image.load("./imegs/dino/dino_k.png")
 cactus_img = pygame.image.load("./imegs/cactus/cactus_big.png")
 small_cactus_img = pygame.image.load("./imegs/cactus/cactus_smol.png")
@@ -38,6 +36,7 @@ pygame.display.set_caption("Google Dino Run")
 mw.fill(back)
 clock = pygame.time.Clock()
 
+
 def draw_text(text, size, color, x, y, align="topleft"):
     font = pygame.font.Font(font1, size)
     label = font.render(text, True, color)
@@ -61,8 +60,39 @@ def start_game():
     game_over = False
 
 
-# menu.append_option('Start', start_game)
-# menu.append_option('Quit', quit)
+class Area():
+    def __init__(self, x=0, y=0, width=10, height=10, color=None):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.fill_color = back
+        if color:
+            self.fill_color = color
+    def color(self, new_color):
+        self.fill_color = new_color
+
+    def fill(self):
+        pygame.draw.rect(mw, self.fill_color, self.rect)
+
+    def collidepoint(self, x, y):
+        return self.rect.collidepoint(x, y)
+
+    def colliderect(self, rect):
+        return self.rect.colliderect(rect)
+
+
+class Picture(Area):
+    def __init__(self, filename, x=0, y=0, width=10, height=10):
+        Area.__init__(self, x=x, y=y, width=width, height=height, color=None)
+        self.image = filename
+
+    def draw(self):
+        mw.blit(self.image, (self.rect.x, self.rect.y))
+
+
+pause_btn = Picture(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10), pause_img.get_width(), pause_img.get_height())
+restart_btn = Picture(resume_img, (SCREEN_WIDTH // 2 - restart_img.get_width() // 2 - 50), (SCREEN_HEIGHT // 2 + 50), restart_img.get_width(), restart_img.get_height())
+resume_btn = Picture(resume_img, (SCREEN_WIDTH // 2 - resume_img.get_width() // 2), (SCREEN_HEIGHT // 2), resume_img.get_width(), resume_img.get_height())
+menu_btn = Picture(menu_img, 700, 10, menu_img.get_width(), menu_img.get_height())
+
 
 class Dinosaur:
     def __init__(self, x, y):
@@ -92,6 +122,7 @@ class Dinosaur:
             self.jumping = True
             jump_sound.play()
 
+
 class Cactus:
     def __init__(self, x, image, speed):
         self.x = x
@@ -107,6 +138,7 @@ class Cactus:
     def update(self):
         self.x -= self.speed
 
+
 countdown_timer = 0
 show_countdown = True
 resume_timer = 0
@@ -114,18 +146,23 @@ paused = False
 pause_timer = 0
 pause_cooldown = False
 
-game_on = True #######
+game_on = True
 
 darken_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 darken_surface.set_alpha(128)
 darken_surface.fill((0, 0, 0))
 
+
 def draw_pause_screen():
     global pause_timer, paused, pause_cooldown
     mw.blit(darken_surface, (0, 0))
     draw_text("Pause", 25, (255, 255, 255), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50, align="center")
-    mw.blit(resume_img, (SCREEN_WIDTH // 2 - resume_img.get_width() // 2, SCREEN_HEIGHT // 2))
-    mw.blit(menu_img, (700,10))
+    # mw.blit(resume_img, (SCREEN_WIDTH // 2 - resume_img.get_width() // 2, SCREEN_HEIGHT // 2))
+    resume_btn.fill()
+    resume_btn.draw()
+    # mw.blit(menu_img, (700, 10))
+    menu_btn.fill()
+    menu_btn.draw()
 
     pause_timer -= 1 / 60
     if pause_timer <= 0:
@@ -137,11 +174,13 @@ def draw_pause_screen():
         pause_timer = 3
         paused = True
 
+
 def handle_resume_input():
     global show_countdown, countdown_timer
     keys = pygame.key.get_pressed()
     if keys[pygame.K_SPACE]:
         show_countdown = True
+
 
 speed = 5
 spawn_counter = 0
@@ -150,7 +189,7 @@ next_cactus_time = random.randint(60, 120)
 game_over = False
 
 try:
-    with open("highscore.txt", "r") as file:
+    with open("highscore.dat", "r") as file:
         high_score = int(file.read())
 except FileNotFoundError:
     high_score = 0
@@ -161,15 +200,26 @@ dinosaur = Dinosaur(100, SCREEN_HEIGHT - GROUND_HEIGHT - 40)
 cacti = []
 restart_delay = 1.5
 
-def draw_restart_screen():
+
+def draw_restart_screen(score_x):
     draw_text("Game Over", 30, (83, 83, 83), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, align="center")
-    mw.blit(restart_img, (SCREEN_WIDTH // 2 - restart_img.get_width() // 2, SCREEN_HEIGHT // 2 + 50))
-    mw.blit(menu_img, (700,10))
+    # mw.blit(restart_img, (SCREEN_WIDTH // 2 - restart_img.get_width() // 2, SCREEN_HEIGHT // 2 + 50))
+    restart_btn.fill()
+    restart_btn.draw()
+    # mw.blit(menu_img, (700, 10))
+    menu_btn.fill()
+    menu_btn.draw()
+    draw_text(f"Score: {score}", 15, (83, 83, 83), score_x, 10, align="topright")
+    draw_text(f"High Score: {high_score}", 15, (83, 83, 83), 10, 30, align="topleft")
+
+
 restart_timer = 0
 
 show_menu = True
+
+
 def game_cicle():
-    global show_menu, game_on, score
+    global show_menu, game_on, score, high_score
     show_menu = False
     while not pygame.key.get_pressed()[pygame.K_ESCAPE] and game_on:
         mw.blit(sky_img, (0, 0))
@@ -193,16 +243,8 @@ def game_cicle():
 
                 if event.key == pygame.K_m:
                     from menu import menu_run
-                    print(game_on)
-                    print(2)
                     menu_run()
                     game_on = False
-
-
-
-
-
-
 
         handle_resume_input()
 
@@ -210,21 +252,15 @@ def game_cicle():
             spawn_counter += 1
             if spawn_counter >= next_cactus_time:
                 if random.randint(0, 1) == 0:
-                    cactus = Cactus(SCREEN_WIDTH, cactus_img, random.randint(3, 7))
+                    cactus = Cactus(SCREEN_WIDTH, cactus_img, random.randint(5, 10))
                 else:
-                    cactus = Cactus(SCREEN_WIDTH, small_cactus_img, random.randint(3, 7))
+                    cactus = Cactus(SCREEN_WIDTH, small_cactus_img, random.randint(5, 10))
 
                 cacti.append(cactus)
                 spawn_counter = 0
                 next_cactus_time = random.randint(60, 120)
 
-
             keys = pygame.key.get_pressed()
-
-
-            if keys[pygame.K_SPACE]:
-                run_sound.stop()
-                dinosaur.jump()
 
             if not dinosaur.jumping and run_sound.get_num_channels() == 0:
                 run_sound.play()
@@ -238,11 +274,24 @@ def game_cicle():
                         dinosaur.y < cactus.y + cactus.height and dinosaur.y + dinosaur.height > cactus.y:
                     game_over = True
 
-            elapsed_time = int(time.time() - start_time)
-            score = elapsed_time
+            elapsed_time_int = int(time.time() - start_time)
+            elapsed_time_float = float(time.time() - start_time)
+            elapsed_time_float = round(elapsed_time_float, 1)
+            score = elapsed_time_int
+
+            if keys[pygame.K_SPACE] and elapsed_time_float > 0.5:
+                run_sound.stop()
+                dinosaur.jump()
+
+        score_x = 0
+        if score_x <= 10:
+            score_x = 165
+        elif score <= 100:
+            score_x = 253
+        # score_x = SCREEN_HEIGHT - GROUND_HEIGHT - 340
 
         if game_over:
-            draw_restart_screen()
+            draw_restart_screen(score_x)
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE] and restart_timer <= 0:
                 start_game()
@@ -264,16 +313,12 @@ def game_cicle():
             if background_sound.get_num_channels() == 0:
                 background_sound.play()
         elif not game_over:
-            score_x = 0
-            if score_x <= 10:
-                score_x = 137
-            elif score <= 100:
-                score_x =247
-
 
             draw_text(f"Score: {score}", 15, (83, 83, 83), score_x, 10, align="topright")
             draw_text(f"High Score: {high_score}", 15, (83, 83, 83), 10, 30, align="topleft")
-            mw.blit(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10, 10))
+            # mw.blit(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10, 10))
+            pause_btn.fill()
+            pause_btn.draw()
 
         if not paused:
             background_sound.stop()
@@ -281,10 +326,12 @@ def game_cicle():
         pygame.display.flip()
         clock.tick(60)
 
-    # Збереження рекорду в файл
-    if score > high_score:
-        with open("highscore.txt", "w") as file:
-            file.write(str(score))
-
+        # Збереження рекорду в файл
+        if score > high_score and game_over:
+            high_score = score
+            with open("highscore.dat", "w") as file:
+                file.write(str(high_score))
+        # pygame.draw.rect(mw, (255, 0, 0), pause_btn.rect)  # Заливка області м'яча червоним кольором
+        # pygame.draw.rect(mw, (255, 0, 0), resume_img.rect)  # Заливка області м'яча червоним кольором
     pygame.quit()
     sys.exit()
