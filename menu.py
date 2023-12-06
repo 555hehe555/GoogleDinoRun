@@ -12,9 +12,9 @@ SAND_HEIGHT = 10
 font1 = ".\Press_Start_2P\PressStart2P-Regular.ttf"
 
 # Load imagesm
-dinosaur_img = pygame.image.load("./imegs/dino/dino_k.png")
-sand_img = pygame.image.load("./imegs/textures/sand.png")
-sky_img = pygame.image.load("./imegs/textures/sky.png")
+dinosaur_img = pygame.image.load("./imegs/dino/dino_k_new_Year.png")
+sand_img = pygame.image.load("./imegs/textures/sand_new_Year.png")
+sky_img = pygame.image.load("./imegs/textures/nebo_new_Year.png")
 sky_img = pygame.transform.scale(sky_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 musik_on_img = pygame.image.load("./imegs/buttons/musik_on.png")
 musik_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
@@ -37,7 +37,7 @@ class Menu:
         self._current_option_index = 0
 
     def append_option(self, option, callback):
-        option_surface = pygame.font.Font(font1, 20).render(option, True, (255, 255, 255))
+        option_surface = pygame.font.Font(font1, 20).render(option, True, (83, 83, 83))
         self._options.append(option_surface)
         self._callbacks.append(callback)
 
@@ -89,7 +89,7 @@ def menu_run():
             option_rect = option_surface.get_rect()
             option_rect.topleft = (100, 70 + i * 70)
             if i == menu._current_option_index:
-                pygame.draw.rect(mw, (9, 100, 0), option_rect)
+                pygame.draw.rect(mw, (0, 204, 204), option_rect)
             mw.blit(option_surface, option_rect)
 
         pygame.display.flip()

@@ -12,11 +12,11 @@ GROUND_HEIGHT = 30
 SAND_HEIGHT = 10
 font1 = ".\Press_Start_2P\PressStart2P-Regular.ttf"
 
-dinosaur_img = pygame.image.load("./imegs/dino/dino_k.png")
-cactus_img = pygame.image.load("./imegs/cactus/cactus_big.png")
-small_cactus_img = pygame.image.load("./imegs/cactus/cactus_smol.png")
-sand_img = pygame.image.load("./imegs/textures/sand.png")
-sky_img = pygame.image.load("./imegs/textures/sky.png")
+dinosaur_img = pygame.image.load("./imegs/dino/dino_k_new_Year.png")
+cactus_img = pygame.image.load("./imegs/cactus/cactus_big_new_Year.png")
+small_cactus_img = pygame.image.load("./imegs/cactus/cactus_smol_new_Year.png")
+sand_img = pygame.image.load("./imegs/textures/sand_new_Year.png")
+sky_img = pygame.image.load("./imegs/textures/nebo_new_Year.png")
 sky_img = pygame.transform.scale(sky_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 restart_img = pygame.image.load("./imegs/buttons/restart.png")
 pause_img = pygame.image.load("./imegs/buttons/pause.png")
