@@ -30,6 +30,7 @@ clock = pygame.time.Clock()
 running = True
 sand_offset = 0
 
+
 class Menu:
     def __init__(self):
         self._options = []
@@ -47,21 +48,27 @@ class Menu:
     def select(self):
         self._callbacks[self._current_option_index]()
 
+
 # Quit function
 def quit_game():
     global running
     running = False
+
+
 menu = Menu()
+
 
 # Add options to the menu
 def create_menu_option():
-    from GoogleDinoRun_test import game_cicle
+    from GoogleDinoRun import game_cicle
 
     menu.append_option("Start Game", game_cicle)
     menu.append_option("Quit", quit_game)
     menu.append_option("about developers", lambda: print("about developers..."))
 
+
 create_menu_option()
+
 
 def menu_run():
     global running
@@ -96,6 +103,7 @@ def menu_run():
 
     sys.exit()
     pygame.quit()
+
 
 menu_run()
 # if show_menu != False:
