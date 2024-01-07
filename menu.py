@@ -58,6 +58,14 @@ def quit_game():
 menu = Menu()
 
 
+from GoogleDinoRun import Picture
+
+musik_state_img = musik_on_img
+
+musik_btn = Picture(musik_state_img, (SCREEN_WIDTH - musik_state_img.get_width() - 10),
+                    (musik_state_img.get_height() - 10), musik_state_img.get_width(),
+                    musik_state_img.get_height())
+
 # Add options to the menu
 def create_menu_option():
     from GoogleDinoRun import game_cicle
@@ -69,10 +77,15 @@ def create_menu_option():
 
 create_menu_option()
 
+musik = True
 
 def menu_run():
-    global running
+    from GoogleDinoRun import Picture
+    global running, musik, musik_state_img
     while running:
+        musik_btn = Picture(musik_state_img, (SCREEN_WIDTH - musik_state_img.get_width() - 10),
+                            (musik_state_img.get_height() - 10), musik_state_img.get_width(),
+                            musik_state_img.get_height())
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -86,10 +99,31 @@ def menu_run():
                     menu.switch(1)
                 elif event.key == pygame.K_SPACE:
                     menu.select()
+                elif event.key == pygame.K_v:
+                    if musik:
+                        musik = False
+                        musik_state_img = musik_off_img
+                    else:
+                        musik = True
+                        musik_state_img = musik_on_img
+
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if musik_btn.collidepoint(event.pos[0], event.pos[1]):
+                    if musik:
+                        musik = False
+                        musik_state_img = musik_off_img
+                    else:
+                        musik = True
+                        musik_state_img = musik_on_img
+
 
         mw.blit(sky_img, (0, 0))
         mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
-        mw.blit(musik_on_img, (700, 10))
+
+        musik_btn.fill()
+        musik_btn.draw()
+
+
 
         # Draw the menu
         for i, option_surface in enumerate(menu._options):
@@ -106,6 +140,3 @@ def menu_run():
 
 
 menu_run()
-# if show_menu != False:
-#     print("menu is running")
-#     menu_run()

@@ -1,5 +1,3 @@
-import os.path
-
 import pygame
 import random
 import time
@@ -24,6 +22,8 @@ restart_img = pygame.image.load("./imegs/buttons/restart.png")
 pause_img = pygame.image.load("./imegs/buttons/pause.png")
 resume_img = pygame.image.load("./imegs/buttons/enter.png")
 menu_img = pygame.image.load("./imegs/buttons/dth.png")
+musik_on_img = pygame.image.load("./imegs/buttons/musik_on.png")
+musik_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
 
 # music
 jump_sound = pygame.mixer.Sound("./sounds/jamp.mp3")
@@ -40,7 +40,7 @@ pygame.display.set_caption("Google Dino Run")
 mw.fill(back)
 clock = pygame.time.Clock()
 
-debag = True
+debag =True
 
 
 def draw_text(text, size, color, x, y, align="topleft"):
@@ -94,14 +94,20 @@ class Picture(Area):
     def draw(self):
         mw.blit(self.image, (self.rect.x, self.rect.y))
 
+musik_state_img = musik_on_img
 
 pause_btn = Picture(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10), (pause_img.get_height() - 10), pause_img.get_width(),
                     pause_img.get_height())
-restart_btn = Picture(resume_img, (SCREEN_WIDTH // 2 - restart_img.get_width() // 2 - 50), (SCREEN_HEIGHT // 2 + 50),
-                      128, restart_img.get_height())
+restart_btn = Picture(restart_img, (SCREEN_WIDTH // 2 - restart_img.get_width() // 2), (SCREEN_HEIGHT // 2 + 70),
+                      restart_img.get_width(), restart_img.get_height())
 resume_btn = Picture(resume_img, (SCREEN_WIDTH // 2 - resume_img.get_width() // 2), (SCREEN_HEIGHT // 2),
                      resume_img.get_width(), resume_img.get_height())
-menu_btn = Picture(menu_img, (SCREEN_WIDTH - pause_img.get_width() - 10), (pause_img.get_height() - 10), menu_img.get_width(), menu_img.get_height())
+menu_btn = Picture(menu_img, (SCREEN_WIDTH - menu_img.get_width() - 10), (menu_img.get_height() - 10), menu_img.get_width(), menu_img.get_height())
+
+musik_btn = Picture(musik_state_img, (SCREEN_WIDTH - musik_state_img.get_width() - 67),
+                    (musik_state_img.get_height() - 10), musik_state_img.get_width(),
+                    musik_state_img.get_height())
+
 
 
 class Dinosaur:
@@ -130,7 +136,9 @@ class Dinosaur:
         if not self.jumping:
             self.velocity = -15
             self.jumping = True
-            jump_sound.play()
+            from menu import musik
+            if musik:
+                jump_sound.play()
 
 
 class Cactus:
@@ -162,6 +170,11 @@ darken_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 darken_surface.set_alpha(128)
 darken_surface.fill((0, 0, 0))
 
+def switch_btn_size (btn_name, btn_img, is_show):
+    if is_show:
+        btn_name.rect.size = (btn_img.get_width(), btn_img.get_height())
+    else:
+        btn_name.rect.size = (0, 0)
 
 def draw_pause_screen():
     global pause_timer, paused, pause_cooldown
@@ -232,13 +245,15 @@ show_menu = True
 
 
 def game_cicle():
-    global show_menu, game_on, score, high_score, paused_score
+    from menu import musik
+    global show_menu, game_on, score, high_score, paused_score, switch_btn_size, debag, show_countdown, resume_timer, musik_state_img, musik
     show_menu = False
     while not pygame.key.get_pressed()[pygame.K_ESCAPE] and game_on:
         mw.blit(sky_img, (0, 0))
         mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
         dinosaur.draw()
         global game_over, paused, spawn_counter, next_cactus_time, restart_timer
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -246,18 +261,50 @@ def game_cicle():
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if menu_btn.collidepoint(event.pos[0],event.pos[1]):
-                    print("menu")
-                if pause_btn.collidepoint(event.pos[0],event.pos[1]):
-                    print("pause")
+                    paused = False
+                    game_over = True
+                    background_sound.stop()
+
+                    from menu import menu_run
+                    menu_run()
+                    game_on = False
+
+                if pause_btn.collidepoint(event.pos[0],event.pos[1]) and not game_over:
+                    paused = not paused
+                    if paused:
+                        show_countdown = False
+                        resume_timer = 3
+                    else:
+                        show_countdown = True
+
                 if resume_btn.collidepoint(event.pos[0],event.pos[1]):
-                    print("resume")
-                if restart_btn.collidepoint(event.pos[0],event.pos[1]):
-                    print("restart")
+                    paused = False
+
+                if restart_btn.collidepoint(event.pos[0],event.pos[1]) and restart_timer <= 0:
+                    start_game()
+                    restart_timer = restart_delay
+                    background_sound.stop()
+                    # Після рестарту гри
+                    game_over = False
+                    paused_score = 0
+
+                    dinosaur.x = 100  # Початкова позиція динозавра
+                    dinosaur.y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
+
+                if musik_btn.collidepoint(event.pos[0], event.pos[1]):
+                    print("v preset")
+                    if musik:
+                        musik = False
+                        musik_state_img = musik_off_img
+                        print(f"debag musik - {musik}")
+                    else:
+                        musik = True
+                        musik_state_img = musik_on_img
+                        print(f"debag musik - {musik}")
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p and not game_over:
                     paused = not paused
-                    global show_countdown, resume_timer
                     if paused:
                         show_countdown = False
                         resume_timer = 3
@@ -265,13 +312,42 @@ def game_cicle():
                         show_countdown = True
 
                 if event.key == pygame.K_m:
+                    paused = False
+                    game_over = True
+                    background_sound.stop()
+
                     from menu import menu_run
                     menu_run()
                     game_on = False
 
+                elif event.key == pygame.K_v:
+                    print("v preset")
+                    if musik:
+                        musik = False
+                        musik_state_img = musik_off_img
+                        print(f"debag musik - {musik}")
+                    else:
+                        musik = True
+                        musik_state_img = musik_on_img
+                        print(f"debag musik - {musik}")
+
+                if event.key == pygame.K_g:
+                    game_over = True
+
+                if event.key == pygame.K_c:
+                    if debag:
+                        debag = False
+                    else:
+                        debag = True
+
         handle_resume_input()
 
         if not game_over and not paused:
+            switch_btn_size(musik_btn, musik_state_img, False)
+            switch_btn_size(resume_btn, resume_img, False)
+            switch_btn_size(restart_btn, restart_img, False)
+            switch_btn_size(menu_btn, menu_img, False)
+
             spawn_counter += 1
             if spawn_counter >= next_cactus_time:
                 if random.randint(0, 1) == 0:
@@ -285,7 +361,7 @@ def game_cicle():
 
             keys = pygame.key.get_pressed()
 
-            if not dinosaur.jumping and run_sound.get_num_channels() == 0:
+            if not dinosaur.jumping and run_sound.get_num_channels() == 0 and musik:
                 run_sound.play()
 
             dinosaur.update()
@@ -299,7 +375,6 @@ def game_cicle():
                         game_over = True
                     else:
                         game_over = False
-
 
             # print(f'score-{int(round(time.time()-1703358308.059905,0)-round(start_time-1703358307.5885847,0))}, paused_score-{paused_score}')
 
@@ -320,6 +395,11 @@ def game_cicle():
         # score_x = SCREEN_HEIGHT - GROUND_HEIGHT - 340
 
         if game_over:
+            switch_btn_size(resume_btn, resume_img, False)
+            switch_btn_size(restart_btn, restart_img, True)
+            switch_btn_size(menu_btn, menu_img, True)
+            switch_btn_size(pause_btn, pause_img, False)
+
             draw_restart_screen(score_x)
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE] and restart_timer <= 0:
@@ -340,8 +420,17 @@ def game_cicle():
             cactus.draw()
 
         if paused:
+            switch_btn_size(musik_btn, musik_state_img, True)
+            switch_btn_size(resume_btn, resume_img, True)
+            switch_btn_size(restart_btn, restart_img, False)
+            switch_btn_size(menu_btn, menu_img, True)
+            switch_btn_size(pause_btn, pause_img, False)
             draw_pause_screen()
-            if background_sound.get_num_channels() == 0:
+
+            musik_btn.fill()
+            musik_btn.draw()
+
+            if background_sound.get_num_channels() == 0 and musik:
                 background_sound.play()
 
             while sounds_sounds.get_num_channels() == 0:
@@ -349,13 +438,18 @@ def game_cicle():
                 paused_score += 1
                 # print(f"paused_score-{paused_score}")
 
-        elif not game_over:
 
+
+        elif not game_over:
+            switch_btn_size(pause_btn, pause_img, True)
+
+            pause_btn.fill()
+            pause_btn.draw()
+            pause_btn.rect.size = (pause_img.get_width(), pause_img.get_height())
             draw_text(f"Score: {score}", 15, (83, 83, 83), score_x, 10, align="topright")
             draw_text(f"High Score: {high_score}", 15, (83, 83, 83), 10, 30, align="topleft")
             # mw.blit(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10, 10))
-            pause_btn.fill()
-            pause_btn.draw()
+
 
         if not paused:
             background_sound.stop()
@@ -368,7 +462,7 @@ def game_cicle():
             high_score = score
             with open("highscore.dat", "w") as file:
                 file.write(str(high_score))
-        pygame.draw.rect(mw, (255, 0, 0), pause_btn.rect)  # Заливка області м'яча червоним кольором
-        pygame.draw.rect(mw, (255, 0, 0), resume_btn.rect)  # Заливка області м'яча червоним кольором
+        # pygame.draw.rect(mw, (255, 0, 0), pause_btn.rect)  # Заливка області м'яча червоним кольором
+        # pygame.draw.rect(mw, (255, 0, 0), resume_btn.rect)  # Заливка області м'яча червоним кольором
     pygame.quit()
     sys.exit()
