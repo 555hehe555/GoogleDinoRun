@@ -1,3 +1,4 @@
+from classes import *
 import pygame
 import random
 import time
@@ -40,7 +41,7 @@ pygame.display.set_caption("Google Dino Run")
 mw.fill(back)
 clock = pygame.time.Clock()
 
-debag =True
+debag = True
 
 
 def draw_text(text, size, color, x, y, align="topleft"):
@@ -59,102 +60,28 @@ def start_game():
     initial_dinosaur_y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
 
     # Ініціалізуємо гру знову
-    dinosaur = Dinosaur(initial_dinosaur_x, initial_dinosaur_y)
+    dinosaur = Dinosaur(dinosaur_img, jump_sound, initial_dinosaur_x, initial_dinosaur_y)
     cacti = []
     score = 0
     start_time = time.time()
     game_over = False
 
 
-class Area():
-    def __init__(self, x=0, y=0, width=10, height=10, color=None):
-        self.rect = pygame.Rect(x, y, width, height)
-        self.fill_color = back
-        if color:
-            self.fill_color = color
-
-    def color(self, new_color):
-        self.fill_color = new_color
-
-    def fill(self):
-        pygame.draw.rect(mw, self.fill_color, self.rect)
-
-    def collidepoint(self, x, y):
-        return self.rect.collidepoint(x, y)
-
-    def colliderect(self, rect):
-        return self.rect.colliderect(rect)
-
-
-class Picture(Area):
-    def __init__(self, filename, x=0, y=0, width=10, height=10):
-        Area.__init__(self, x=x, y=y, width=width, height=height, color=None)
-        self.image = filename
-
-    def draw(self):
-        mw.blit(self.image, (self.rect.x, self.rect.y))
-
 musik_state_img = musik_on_img
 
-pause_btn = Picture(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10), (pause_img.get_height() - 10), pause_img.get_width(),
+pause_btn = Picture(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10), (pause_img.get_height() - 10),
+                    pause_img.get_width(),
                     pause_img.get_height())
 restart_btn = Picture(restart_img, (SCREEN_WIDTH // 2 - restart_img.get_width() // 2), (SCREEN_HEIGHT // 2 + 70),
                       restart_img.get_width(), restart_img.get_height())
 resume_btn = Picture(resume_img, (SCREEN_WIDTH // 2 - resume_img.get_width() // 2), (SCREEN_HEIGHT // 2),
                      resume_img.get_width(), resume_img.get_height())
-menu_btn = Picture(menu_img, (SCREEN_WIDTH - menu_img.get_width() - 10), (menu_img.get_height() - 10), menu_img.get_width(), menu_img.get_height())
+menu_btn = Picture(menu_img, (SCREEN_WIDTH - menu_img.get_width() - 10), (menu_img.get_height() - 10),
+                   menu_img.get_width(), menu_img.get_height())
 
 musik_btn = Picture(musik_state_img, (SCREEN_WIDTH - musik_state_img.get_width() - 67),
                     (musik_state_img.get_height() - 10), musik_state_img.get_width(),
                     musik_state_img.get_height())
-
-
-
-class Dinosaur:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.start_x = x  # Початкова позиція динозавра
-        self.width = 50
-        self.height = 40
-        self.velocity = 0
-        self.gravity = 0.75
-        self.jumping = False
-
-    def draw(self):
-        mw.blit(dinosaur_img, (self.x, self.y))
-
-    def update(self):
-        self.velocity += self.gravity
-        self.y += self.velocity
-        if self.y >= SCREEN_HEIGHT - GROUND_HEIGHT - self.height:
-            self.y = SCREEN_HEIGHT - GROUND_HEIGHT - self.height
-            self.velocity = 0
-            self.jumping = False
-
-    def jump(self):
-        if not self.jumping:
-            self.velocity = -15
-            self.jumping = True
-            from menu import musik
-            if musik:
-                jump_sound.play()
-
-
-class Cactus:
-    def __init__(self, x, image, speed):
-        self.x = x
-        self.y = SCREEN_HEIGHT - GROUND_HEIGHT - image.get_height()
-        self.image = image
-        self.width = image.get_width()
-        self.height = image.get_height()
-        self.speed = speed
-
-    def draw(self):
-        mw.blit(self.image, (self.x, self.y))
-
-    def update(self):
-        self.x -= self.speed
 
 
 countdown_timer = 0
@@ -170,11 +97,13 @@ darken_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 darken_surface.set_alpha(128)
 darken_surface.fill((0, 0, 0))
 
-def switch_btn_size (btn_name, btn_img, is_show):
+
+def switch_btn_size(btn_name, btn_img, is_show):
     if is_show:
         btn_name.rect.size = (btn_img.get_width(), btn_img.get_height())
     else:
         btn_name.rect.size = (0, 0)
+
 
 def draw_pause_screen():
     global pause_timer, paused, pause_cooldown
@@ -210,8 +139,7 @@ spawn_counter = 0
 sand_offset = 0
 next_cactus_time = random.randint(60, 120)
 game_over = False
-
-
+silent_game_over = False
 
 try:
     with open("highscore.dat", "r") as file:
@@ -222,7 +150,7 @@ except:
 
 score = 0
 start_time = time.time()
-dinosaur = Dinosaur(100, SCREEN_HEIGHT - GROUND_HEIGHT - 40)
+dinosaur = Dinosaur(dinosaur_img, jump_sound, 100, SCREEN_HEIGHT - GROUND_HEIGHT - 40)
 cacti = []
 restart_delay = 1.5
 
@@ -242,25 +170,25 @@ def draw_restart_screen(score_x):
 restart_timer = 0
 paused_score = 0
 show_menu = True
-
+elapsed_time_int, elapsed_time_float = 0, 0
 
 def game_cicle():
-    from menu import musik
-    global show_menu, game_on, score, high_score, paused_score, switch_btn_size, debag, show_countdown, resume_timer, musik_state_img, musik
+    global show_menu, game_on, score, high_score, paused_score, switch_btn_size, debag, show_countdown, resume_timer, musik_state_img, musik, silent_game_over, elapsed_time_int, elapsed_time_float
     show_menu = False
     while not pygame.key.get_pressed()[pygame.K_ESCAPE] and game_on:
         mw.blit(sky_img, (0, 0))
         mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
         dinosaur.draw()
         global game_over, paused, spawn_counter, next_cactus_time, restart_timer
-
+        a = clock.get_fps()
+        print(a)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if menu_btn.collidepoint(event.pos[0],event.pos[1]):
+                if menu_btn.collidepoint(event.pos[0], event.pos[1]):
                     paused = False
                     game_over = True
                     background_sound.stop()
@@ -269,7 +197,7 @@ def game_cicle():
                     menu_run()
                     game_on = False
 
-                if pause_btn.collidepoint(event.pos[0],event.pos[1]) and not game_over:
+                if pause_btn.collidepoint(event.pos[0], event.pos[1]) and not game_over:
                     paused = not paused
                     if paused:
                         show_countdown = False
@@ -277,10 +205,10 @@ def game_cicle():
                     else:
                         show_countdown = True
 
-                if resume_btn.collidepoint(event.pos[0],event.pos[1]):
+                if resume_btn.collidepoint(event.pos[0], event.pos[1]):
                     paused = False
 
-                if restart_btn.collidepoint(event.pos[0],event.pos[1]) and restart_timer <= 0:
+                if restart_btn.collidepoint(event.pos[0], event.pos[1]) and restart_timer <= 0:
                     start_game()
                     restart_timer = restart_delay
                     background_sound.stop()
@@ -313,8 +241,9 @@ def game_cicle():
 
                 if event.key == pygame.K_m:
                     paused = False
-                    game_over = True
+                    silent_game_over = True
                     background_sound.stop()
+
 
                     from menu import menu_run
                     menu_run()
@@ -333,6 +262,9 @@ def game_cicle():
 
                 if event.key == pygame.K_g:
                     game_over = True
+
+                if event.key == pygame.K_r:
+                    silent_game_over = True
 
                 if event.key == pygame.K_c:
                     if debag:
@@ -413,6 +345,27 @@ def game_cicle():
                 dinosaur.x = 100  # Початкова позиція динозавра
                 dinosaur.y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
 
+        if silent_game_over:
+            switch_btn_size(resume_btn, resume_img, False)
+            switch_btn_size(restart_btn, restart_img, True)
+            switch_btn_size(menu_btn, menu_img, True)
+            switch_btn_size(pause_btn, pause_img, False)
+
+            if restart_timer <= 0:
+                jump_sound.stop()
+                start_game()
+                restart_timer = restart_delay
+                background_sound.stop()
+                # Після рестарту гри
+                silent_game_over = False
+                paused_score = 0
+                elapsed_time_int = 0
+                elapsed_time_float = 0
+
+                dinosaur.x = 100  # Початкова позиція динозавра
+                dinosaur.y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
+
+
         if restart_timer > 0:
             restart_timer -= 1 / 60
 
@@ -449,7 +402,6 @@ def game_cicle():
             draw_text(f"Score: {score}", 15, (83, 83, 83), score_x, 10, align="topright")
             draw_text(f"High Score: {high_score}", 15, (83, 83, 83), 10, 30, align="topleft")
             # mw.blit(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10, 10))
-
 
         if not paused:
             background_sound.stop()

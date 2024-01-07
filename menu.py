@@ -1,3 +1,4 @@
+from classes import *
 import pygame
 import sys
 
@@ -31,24 +32,6 @@ running = True
 sand_offset = 0
 
 
-class Menu:
-    def __init__(self):
-        self._options = []
-        self._callbacks = []
-        self._current_option_index = 0
-
-    def append_option(self, option, callback):
-        option_surface = pygame.font.Font(font1, 20).render(option, True, (83, 83, 83))
-        self._options.append(option_surface)
-        self._callbacks.append(callback)
-
-    def switch(self, direction):
-        self._current_option_index = max(0, min(self._current_option_index + direction, len(self._options) - 1))
-
-    def select(self):
-        self._callbacks[self._current_option_index]()
-
-
 # Quit function
 def quit_game():
     global running
@@ -58,7 +41,7 @@ def quit_game():
 menu = Menu()
 
 
-from GoogleDinoRun import Picture
+from classes import Picture
 
 musik_state_img = musik_on_img
 
@@ -77,15 +60,11 @@ def create_menu_option():
 
 create_menu_option()
 
-musik = True
+
 
 def menu_run():
-    from GoogleDinoRun import Picture
     global running, musik, musik_state_img
     while running:
-        musik_btn = Picture(musik_state_img, (SCREEN_WIDTH - musik_state_img.get_width() - 10),
-                            (musik_state_img.get_height() - 10), musik_state_img.get_width(),
-                            musik_state_img.get_height())
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
