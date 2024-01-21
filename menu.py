@@ -17,8 +17,8 @@ dinosaur_img = pygame.image.load("./imegs/dino/dino_k_new_Year.png")
 sand_img = pygame.image.load("./imegs/textures/sand_new_Year.png")
 sky_img = pygame.image.load("./imegs/textures/nebo_new_Year.png")
 sky_img = pygame.transform.scale(sky_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-musik_on_img = pygame.image.load("./imegs/buttons/musik_on.png")
-musik_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
+music_on_img = pygame.image.load("./imegs/buttons/musik_on.png")
+music_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
 
 # Background color and window initialization
 background = (153, 0, 153)
@@ -41,14 +41,6 @@ def quit_game():
 menu = Menu()
 
 
-from classes import Picture
-
-musik_state_img = musik_on_img
-
-musik_btn = Picture(musik_state_img, (SCREEN_WIDTH - musik_state_img.get_width() - 10),
-                    (musik_state_img.get_height() - 10), musik_state_img.get_width(),
-                    musik_state_img.get_height())
-
 # Add options to the menu
 def create_menu_option():
     from GoogleDinoRun import game_cicle
@@ -63,7 +55,7 @@ create_menu_option()
 
 
 def menu_run():
-    global running, musik, musik_state_img
+    global running, music, music_btns
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -79,30 +71,41 @@ def menu_run():
                 elif event.key == pygame.K_SPACE:
                     menu.select()
                 elif event.key == pygame.K_v:
-                    if musik:
-                        musik = False
-                        musik_state_img = musik_off_img
+                    if switch_music_btn:
+                        import classes as cl
+                        cl.switch_music_btn = False
+                        cl.music = False
                     else:
-                        musik = True
-                        musik_state_img = musik_on_img
+                        import classes as cl
+                        cl.switch_music_btn = True
+                        cl.music = True
 
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if musik_btn.collidepoint(event.pos[0], event.pos[1]):
-                    if musik:
-                        musik = False
-                        musik_state_img = musik_off_img
-                    else:
-                        musik = True
-                        musik_state_img = musik_on_img
-
+            # elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # if musik_btn.collidepoint(event.pos[0], event.pos[1]):
+                #     change_music_state()
 
         mw.blit(sky_img, (0, 0))
         mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
 
-        musik_btn.fill()
-        musik_btn.draw()
-
-
+        # musik_btn.fill()
+        # musik_btn.draw()
+        from classes import switch_music_btn
+        if switch_music_btn:
+            print(1)
+            music_on_btn = Picture(music_on_img, (SCREEN_WIDTH - music_on_img.get_width() - 10),
+                                   (music_on_img.get_height() - 10), music_on_img.get_width(),
+                                   music_on_img.get_height())
+            music_btns = [music_on_btn]
+        else:
+            print(2)
+            music_off_btn = Picture(music_off_img, (SCREEN_WIDTH - music_off_img.get_width() - 10),
+                                    (music_off_img.get_height() - 10), music_off_img.get_width(),
+                                    music_off_img.get_height())
+            music_btns = [music_off_btn]
+        print(f"debag{music_btns}")
+        for music_btn in music_btns:
+            music_btn.fill()
+            music_btn.draw()
 
         # Draw the menu
         for i, option_surface in enumerate(menu._options):

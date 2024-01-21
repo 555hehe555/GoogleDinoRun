@@ -1,4 +1,4 @@
-from classes import *
+from classes import Cactus, Dinosaur, Picture, switch_music_btn
 import pygame
 import random
 import time
@@ -23,8 +23,8 @@ restart_img = pygame.image.load("./imegs/buttons/restart.png")
 pause_img = pygame.image.load("./imegs/buttons/pause.png")
 resume_img = pygame.image.load("./imegs/buttons/enter.png")
 menu_img = pygame.image.load("./imegs/buttons/dth.png")
-musik_on_img = pygame.image.load("./imegs/buttons/musik_on.png")
-musik_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
+music_on_img = pygame.image.load("./imegs/buttons/musik_on.png")
+music_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
 
 # music
 jump_sound = pygame.mixer.Sound("./sounds/jamp.mp3")
@@ -60,14 +60,14 @@ def start_game():
     initial_dinosaur_y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
 
     # Ініціалізуємо гру знову
-    dinosaur = Dinosaur(dinosaur_img, jump_sound, initial_dinosaur_x, initial_dinosaur_y)
+    dinosaur = Dinosaur(dinosaur_img, initial_dinosaur_x, initial_dinosaur_y)
     cacti = []
     score = 0
     start_time = time.time()
     game_over = False
 
 
-musik_state_img = musik_on_img
+music_state_img = music_on_img
 
 pause_btn = Picture(pause_img, (SCREEN_WIDTH - pause_img.get_width() - 10), (pause_img.get_height() - 10),
                     pause_img.get_width(),
@@ -78,11 +78,9 @@ resume_btn = Picture(resume_img, (SCREEN_WIDTH // 2 - resume_img.get_width() // 
                      resume_img.get_width(), resume_img.get_height())
 menu_btn = Picture(menu_img, (SCREEN_WIDTH - menu_img.get_width() - 10), (menu_img.get_height() - 10),
                    menu_img.get_width(), menu_img.get_height())
-
-musik_btn = Picture(musik_state_img, (SCREEN_WIDTH - musik_state_img.get_width() - 67),
-                    (musik_state_img.get_height() - 10), musik_state_img.get_width(),
-                    musik_state_img.get_height())
-
+music_btn = Picture(music_state_img, (SCREEN_WIDTH - music_state_img.get_width() - 67),
+                    (music_state_img.get_height() - 10), music_state_img.get_width(),
+                    music_state_img.get_height())
 
 countdown_timer = 0
 show_countdown = True
@@ -150,7 +148,7 @@ except:
 
 score = 0
 start_time = time.time()
-dinosaur = Dinosaur(dinosaur_img, jump_sound, 100, SCREEN_HEIGHT - GROUND_HEIGHT - 40)
+dinosaur = Dinosaur(dinosaur_img, 100, SCREEN_HEIGHT - GROUND_HEIGHT - 40)
 cacti = []
 restart_delay = 1.5
 
@@ -172,8 +170,10 @@ paused_score = 0
 show_menu = True
 elapsed_time_int, elapsed_time_float = 0, 0
 
+
 def game_cicle():
-    global show_menu, game_on, score, high_score, paused_score, switch_btn_size, debag, show_countdown, resume_timer, musik_state_img, musik, silent_game_over, elapsed_time_int, elapsed_time_float
+    global show_menu, game_on, score, high_score, paused_score, switch_btn_size, debag, show_countdown, resume_timer, \
+        music, silent_game_over, elapsed_time_int, elapsed_time_float, jump_sound, music_btn
     show_menu = False
     while not pygame.key.get_pressed()[pygame.K_ESCAPE] and game_on:
         mw.blit(sky_img, (0, 0))
@@ -219,16 +219,8 @@ def game_cicle():
                     dinosaur.x = 100  # Початкова позиція динозавра
                     dinosaur.y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
 
-                if musik_btn.collidepoint(event.pos[0], event.pos[1]):
-                    print("v preset")
-                    if musik:
-                        musik = False
-                        musik_state_img = musik_off_img
-                        print(f"debag musik - {musik}")
-                    else:
-                        musik = True
-                        musik_state_img = musik_on_img
-                        print(f"debag musik - {musik}")
+                # if musik_btn.collidepoint(event.pos[0], event.pos[1]):
+                #     change_music_state()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p and not game_over:
@@ -244,21 +236,17 @@ def game_cicle():
                     silent_game_over = True
                     background_sound.stop()
 
-
                     from menu import menu_run
                     menu_run()
                     game_on = False
 
                 elif event.key == pygame.K_v:
-                    print("v preset")
-                    if musik:
-                        musik = False
-                        musik_state_img = musik_off_img
-                        print(f"debag musik - {musik}")
+                    if switch_music_btn:
+                        import classes as cl
+                        cl.switch_music_btn = False
                     else:
-                        musik = True
-                        musik_state_img = musik_on_img
-                        print(f"debag musik - {musik}")
+                        import classes as cl
+                        cl.switch_music_btn = True
 
                 if event.key == pygame.K_g:
                     game_over = True
@@ -274,8 +262,16 @@ def game_cicle():
 
         handle_resume_input()
 
+        from classes import switch_music_btn
+        if switch_music_btn:
+            import classes as cl
+            cl.music = True
+        else:
+            import classes as cl
+            cl.music = False
+
         if not game_over and not paused:
-            switch_btn_size(musik_btn, musik_state_img, False)
+            switch_btn_size(music_btn, music_state_img, False)
             switch_btn_size(resume_btn, resume_img, False)
             switch_btn_size(restart_btn, restart_img, False)
             switch_btn_size(menu_btn, menu_img, False)
@@ -292,8 +288,10 @@ def game_cicle():
                 next_cactus_time = random.randint(60, 120)
 
             keys = pygame.key.get_pressed()
+            from classes import music
+            print(music)
 
-            if not dinosaur.jumping and run_sound.get_num_channels() == 0 and musik:
+            if not dinosaur.jumping and run_sound.get_num_channels() == 0 and music:
                 run_sound.play()
 
             dinosaur.update()
@@ -308,7 +306,8 @@ def game_cicle():
                     else:
                         game_over = False
 
-            # print(f'score-{int(round(time.time()-1703358308.059905,0)-round(start_time-1703358307.5885847,0))}, paused_score-{paused_score}')
+            # print(f'score-{int(round(time.time()-1703358308.059905,0)-round(start_time-1703358307.5885847,0))},
+            # paused_score-{paused_score}')
 
             elapsed_time_int = int(time.time() - start_time - paused_score)
             elapsed_time_float = float(time.time() - start_time - paused_score)
@@ -318,6 +317,11 @@ def game_cicle():
             if keys[pygame.K_SPACE] and elapsed_time_float > 0.5:
                 run_sound.stop()
                 dinosaur.jump()
+                if jump_sound.get_num_channels() == 0 and music:
+                    jump_sound.play()
+
+            if dinosaur.y == (SCREEN_HEIGHT - GROUND_HEIGHT - 40):
+                jump_sound.stop()
 
         score_x = 0
         if score_x <= 10:
@@ -365,7 +369,6 @@ def game_cicle():
                 dinosaur.x = 100  # Початкова позиція динозавра
                 dinosaur.y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
 
-
         if restart_timer > 0:
             restart_timer -= 1 / 60
 
@@ -373,17 +376,39 @@ def game_cicle():
             cactus.draw()
 
         if paused:
-            switch_btn_size(musik_btn, musik_state_img, True)
+            switch_btn_size(music_btn, music_state_img, True)
             switch_btn_size(resume_btn, resume_img, True)
             switch_btn_size(restart_btn, restart_img, False)
             switch_btn_size(menu_btn, menu_img, True)
             switch_btn_size(pause_btn, pause_img, False)
             draw_pause_screen()
 
-            musik_btn.fill()
-            musik_btn.draw()
+            music_btns = []
 
-            if background_sound.get_num_channels() == 0 and musik:
+            from classes import switch_music_btn
+            if switch_music_btn:
+                print(1)
+                music_on_btn = Picture(music_on_img, (SCREEN_WIDTH - music_on_img.get_width() - 67),
+                                       (music_on_img.get_height() - 10), music_on_img.get_width(),
+                                       music_on_img.get_height())
+                music_btns = [music_on_btn]
+            else:
+                print(2)
+                music_off_btn = Picture(music_off_img, (SCREEN_WIDTH - music_off_img.get_width() - 67),
+                                        (music_off_img.get_height() - 10), music_off_img.get_width(),
+                                        music_off_img.get_height())
+                music_btns = [music_off_btn]
+            print(f"debag{music_btns}")
+            for music_btn in music_btns:
+                music_btn.fill()
+                music_btn.draw()
+
+            print(music)
+            from classes import music
+            if not music:
+                background_sound.stop()
+
+            if background_sound.get_num_channels() == 0 and music:
                 background_sound.play()
 
             while sounds_sounds.get_num_channels() == 0:

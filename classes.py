@@ -12,7 +12,26 @@ back = (153, 0, 153)
 mw = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Google Dino Run")
 
-musik = True
+musik_on_img = pygame.image.load("./imegs/buttons/musik_on.png")
+musik_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
+
+music = True
+switch_music_btn = True
+
+# def change_music_state():
+#     global musik, musik_state_img
+#     if musik:
+#         musik = False
+#         musik_state_img = musik_off_img
+#         print("a")
+#         return musik, musik_state_img
+#     else:
+#         musik = True
+#         musik_state_img = musik_on_img
+#         print("b")
+#         return musik, musik_state_img
+
+
 
 
 class Area():
@@ -45,7 +64,7 @@ class Picture(Area):
 
 
 class Dinosaur:
-    def __init__(self, name_img, jump_song, x, y):
+    def __init__(self, name_img, x, y):
         self.x = x
         self.y = y
         self.start_x = x  # Початкова позиція динозавра
@@ -55,7 +74,6 @@ class Dinosaur:
         self.gravity = 0.75
         self.jumping = False
         self.name_img = name_img
-        self.jump_song = jump_song
 
     def draw(self):
         mw.blit(self.name_img, (self.x, self.y))
@@ -72,8 +90,7 @@ class Dinosaur:
         if not self.jumping:
             self.velocity = -15
             self.jumping = True
-            if musik:
-                self.jump_song.play()
+
 
 
 class Cactus:
