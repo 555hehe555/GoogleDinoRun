@@ -17,6 +17,7 @@ musik_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
 
 music = True
 switch_music_btn = True
+menu_score = 0
 
 # def change_music_state():
 #     global musik, musik_state_img

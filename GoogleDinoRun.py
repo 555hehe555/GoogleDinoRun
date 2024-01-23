@@ -173,7 +173,7 @@ elapsed_time_int, elapsed_time_float = 0, 0
 
 def game_cicle():
     global show_menu, game_on, score, high_score, paused_score, switch_btn_size, debag, show_countdown, resume_timer, \
-        music, silent_game_over, elapsed_time_int, elapsed_time_float, jump_sound, music_btn
+        music, silent_game_over, elapsed_time_int, elapsed_time_float, jump_sound, music_btn, switch_music_btn
     show_menu = False
     while not pygame.key.get_pressed()[pygame.K_ESCAPE] and game_on:
         mw.blit(sky_img, (0, 0))
@@ -219,8 +219,10 @@ def game_cicle():
                     dinosaur.x = 100  # Початкова позиція динозавра
                     dinosaur.y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
 
-                # if musik_btn.collidepoint(event.pos[0], event.pos[1]):
-                #     change_music_state()
+
+                from mysic_func import click_on_switch_music_btn
+                if paused:
+                    click_on_switch_music_btn(switch_music_btn, event, 74)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p and not game_over:
@@ -240,13 +242,9 @@ def game_cicle():
                     menu_run()
                     game_on = False
 
-                elif event.key == pygame.K_v:
-                    if switch_music_btn:
-                        import classes as cl
-                        cl.switch_music_btn = False
-                    else:
-                        import classes as cl
-                        cl.switch_music_btn = True
+                elif event.key == pygame.K_v and paused:
+                    from mysic_func import change_music_state
+                    change_music_state(switch_music_btn)
 
                 if event.key == pygame.K_g:
                     game_over = True
@@ -383,25 +381,10 @@ def game_cicle():
             switch_btn_size(pause_btn, pause_img, False)
             draw_pause_screen()
 
-            music_btns = []
-
             from classes import switch_music_btn
-            if switch_music_btn:
-                print(1)
-                music_on_btn = Picture(music_on_img, (SCREEN_WIDTH - music_on_img.get_width() - 67),
-                                       (music_on_img.get_height() - 10), music_on_img.get_width(),
-                                       music_on_img.get_height())
-                music_btns = [music_on_btn]
-            else:
-                print(2)
-                music_off_btn = Picture(music_off_img, (SCREEN_WIDTH - music_off_img.get_width() - 67),
-                                        (music_off_img.get_height() - 10), music_off_img.get_width(),
-                                        music_off_img.get_height())
-                music_btns = [music_off_btn]
-            print(f"debag{music_btns}")
-            for music_btn in music_btns:
-                music_btn.fill()
-                music_btn.draw()
+            from mysic_func import create_switch_music_btn
+            if paused:
+                create_switch_music_btn(switch_music_btn, 74)
 
             print(music)
             from classes import music

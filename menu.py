@@ -71,18 +71,12 @@ def menu_run():
                 elif event.key == pygame.K_SPACE:
                     menu.select()
                 elif event.key == pygame.K_v:
-                    if switch_music_btn:
-                        import classes as cl
-                        cl.switch_music_btn = False
-                        cl.music = False
-                    else:
-                        import classes as cl
-                        cl.switch_music_btn = True
-                        cl.music = True
+                    from mysic_func import change_music_state
+                    change_music_state(switch_music_btn)
 
-            # elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                # if musik_btn.collidepoint(event.pos[0], event.pos[1]):
-                #     change_music_state()
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                from mysic_func import click_on_switch_music_btn
+                click_on_switch_music_btn(switch_music_btn, event, 10)
 
         mw.blit(sky_img, (0, 0))
         mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
@@ -90,22 +84,8 @@ def menu_run():
         # musik_btn.fill()
         # musik_btn.draw()
         from classes import switch_music_btn
-        if switch_music_btn:
-            print(1)
-            music_on_btn = Picture(music_on_img, (SCREEN_WIDTH - music_on_img.get_width() - 10),
-                                   (music_on_img.get_height() - 10), music_on_img.get_width(),
-                                   music_on_img.get_height())
-            music_btns = [music_on_btn]
-        else:
-            print(2)
-            music_off_btn = Picture(music_off_img, (SCREEN_WIDTH - music_off_img.get_width() - 10),
-                                    (music_off_img.get_height() - 10), music_off_img.get_width(),
-                                    music_off_img.get_height())
-            music_btns = [music_off_btn]
-        print(f"debag{music_btns}")
-        for music_btn in music_btns:
-            music_btn.fill()
-            music_btn.draw()
+        from mysic_func import create_switch_music_btn
+        create_switch_music_btn(switch_music_btn, 10)
 
         # Draw the menu
         for i, option_surface in enumerate(menu._options):
