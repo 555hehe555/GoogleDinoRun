@@ -147,7 +147,7 @@ except:
     high_score = 0
 
 score = 0
-start_time = time.time()
+start_time = None
 dinosaur = Dinosaur(dinosaur_img, 100, SCREEN_HEIGHT - GROUND_HEIGHT - 40)
 cacti = []
 restart_delay = 1.5
@@ -165,6 +165,8 @@ def draw_restart_screen(score_x):
     draw_text(f"High Score: {high_score}", 15, (83, 83, 83), 10, 30, align="topleft")
 
 
+
+
 restart_timer = 0
 paused_score = 0
 show_menu = True
@@ -175,6 +177,7 @@ def game_cicle():
     global show_menu, game_on, score, high_score, paused_score, switch_btn_size, debag, show_countdown, resume_timer, \
         music, silent_game_over, elapsed_time_int, elapsed_time_float, jump_sound, music_btn, switch_music_btn
     show_menu = False
+    start_time = time.time()
     while not pygame.key.get_pressed()[pygame.K_ESCAPE] and game_on:
         mw.blit(sky_img, (0, 0))
         mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
@@ -215,7 +218,7 @@ def game_cicle():
                     # Після рестарту гри
                     game_over = False
                     paused_score = 0
-
+                    start_time = time.time()
                     dinosaur.x = 100  # Початкова позиція динозавра
                     dinosaur.y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
 
@@ -257,6 +260,11 @@ def game_cicle():
                         debag = False
                     else:
                         debag = True
+
+                if event.key == pygame.K_h:
+                    with open("highscore.dat", "w"):
+                        high_score = 0
+
 
         handle_resume_input()
 
@@ -343,7 +351,7 @@ def game_cicle():
                 # Після рестарту гри
                 game_over = False
                 paused_score = 0
-
+                start_time = time.time()
                 dinosaur.x = 100  # Початкова позиція динозавра
                 dinosaur.y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
 
