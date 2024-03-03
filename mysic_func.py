@@ -24,6 +24,7 @@ def change_music_state(switch_music_btn):
         cl.switch_music_btn = True
         cl.music = True
 
+
 def click_on_switch_music_btn(switch_music_btn, event, x):
     music_btn = create_switch_music_btn(switch_music_btn, x)
     if music_btn.collidepoint(event.pos[0], event.pos[1]):

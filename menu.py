@@ -1,9 +1,7 @@
-from classes import *
-import pygame
 import sys
+import time
+from classes import *
 
-pygame.init()
-pygame.mixer.init()
 
 # Screen dimensions
 SCREEN_WIDTH = 750
@@ -11,21 +9,21 @@ SCREEN_HEIGHT = 500
 GROUND_HEIGHT = 30
 SAND_HEIGHT = 10
 font1 = ".\Press_Start_2P\PressStart2P-Regular.ttf"
+local_time = time.localtime()
+month = local_time.tm_mon
 
-# Load imagesm
-dinosaur_img = pygame.image.load("./imegs/dino/dino_k_new_Year.png")
-sand_img = pygame.image.load("./imegs/textures/sand_new_Year.png")
-sky_img = pygame.image.load("./imegs/textures/nebo_new_Year.png")
+
+if 3 < month < 11:
+    sand_img = pygame.image.load("./imegs/textures/sand.png").convert()
+    sky_img = pygame.image.load("./imegs/textures/sky.png").convert()
+else:
+    sand_img = pygame.image.load("./imegs/textures/sand_new_Year.png").convert()
+    sky_img = pygame.image.load("./imegs/textures/sky_new_Year.png").convert()
 sky_img = pygame.transform.scale(sky_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-music_on_img = pygame.image.load("./imegs/buttons/musik_on.png")
-music_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
 
 # Background color and window initialization
-background = (153, 0, 153)
 mw = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Google Dino Run")
-mw.fill(background)
-clock = pygame.time.Clock()
 
 # Variables for game execution control
 running = True
@@ -47,15 +45,15 @@ def create_menu_option():
 
     menu.append_option("Start Game", game_cicle)
     menu.append_option("Quit", quit_game)
-    menu.append_option("about developers", lambda: print("about developers..."))
 
 
 create_menu_option()
 
-
+start_game_obg = Area(50, 30, 200, 20)
+quit_obg = Area(50, 100, 80, 20)
 
 def menu_run():
-    global running, music, music_btns
+    global running, music, music_btns, switch_music_btn, start_game_obg, quit_obg, game_cicle, quit_obg
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -78,11 +76,16 @@ def menu_run():
                 from mysic_func import click_on_switch_music_btn
                 click_on_switch_music_btn(switch_music_btn, event, 10)
 
+                if start_game_obg.collidepoint(event.pos[0], event.pos[1]):
+                    from GoogleDinoRun import game_cicle
+
+                    game_cicle()
+                if quit_obg.collidepoint(event.pos[0], event.pos[1]):
+                    quit_game()
+
         mw.blit(sky_img, (0, 0))
         mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
 
-        # musik_btn.fill()
-        # musik_btn.draw()
         from classes import switch_music_btn
         from mysic_func import create_switch_music_btn
         create_switch_music_btn(switch_music_btn, 10)
@@ -90,7 +93,7 @@ def menu_run():
         # Draw the menu
         for i, option_surface in enumerate(menu._options):
             option_rect = option_surface.get_rect()
-            option_rect.topleft = (100, 70 + i * 70)
+            option_rect.topleft = (50, 30 + i * 70)
             if i == menu._current_option_index:
                 pygame.draw.rect(mw, (0, 204, 204), option_rect)
             mw.blit(option_surface, option_rect)

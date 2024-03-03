@@ -12,8 +12,8 @@ back = (153, 0, 153)
 mw = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Google Dino Run")
 
-musik_on_img = pygame.image.load("./imegs/buttons/musik_on.png")
-musik_off_img = pygame.image.load("./imegs/buttons/musik_off.png")
+musik_on_img = pygame.image.load("./imegs/buttons/musik_on.png").convert()
+musik_off_img = pygame.image.load("./imegs/buttons/musik_off.png").convert()
 
 music = True
 switch_music_btn = True
