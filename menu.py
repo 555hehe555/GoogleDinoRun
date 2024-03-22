@@ -13,12 +13,12 @@ local_time = time.localtime()
 month = local_time.tm_mon
 
 
-if 3 < month < 11:
+if month > 3 and month < 11:
     sand_img = pygame.image.load("./imegs/textures/sand.png").convert()
-    sky_img = pygame.image.load("./imegs/textures/sky.png").convert()
+    sky_img = pygame.image.load("./imegs/textures/nebo.png").convert()
 else:
     sand_img = pygame.image.load("./imegs/textures/sand_new_Year.png").convert()
-    sky_img = pygame.image.load("./imegs/textures/sky_new_Year.png").convert()
+    sky_img = pygame.image.load("./imegs/textures/nebo_new_Year.png").convert()
 sky_img = pygame.transform.scale(sky_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Background color and window initialization
@@ -49,8 +49,8 @@ def create_menu_option():
 
 create_menu_option()
 
-start_game_obg = Area(50, 30, 200, 20)
-quit_obg = Area(50, 100, 80, 20)
+start_game_obg = Area(100, 70, 200, 20)
+quit_obg = Area(100, 140, 80, 20)
 
 def menu_run():
     global running, music, music_btns, switch_music_btn, start_game_obg, quit_obg, game_cicle, quit_obg
@@ -93,7 +93,7 @@ def menu_run():
         # Draw the menu
         for i, option_surface in enumerate(menu._options):
             option_rect = option_surface.get_rect()
-            option_rect.topleft = (50, 30 + i * 70)
+            option_rect.topleft = (100, 70 + i * 70)
             if i == menu._current_option_index:
                 pygame.draw.rect(mw, (0, 204, 204), option_rect)
             mw.blit(option_surface, option_rect)

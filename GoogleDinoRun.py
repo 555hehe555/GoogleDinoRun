@@ -15,19 +15,18 @@ font1 = ".\Press_Start_2P\PressStart2P-Regular.ttf"
 local_time = time.localtime()
 month = local_time.tm_mon
 
-if 3 < month < 11:
+if month > 3 and month < 11:
     dinosaur_img = pygame.image.load("./imegs/dino/dino_k.png").convert_alpha()
     cactus_img = pygame.image.load("./imegs/cactus/cactus_big.png").convert_alpha()
     small_cactus_img = pygame.image.load("./imegs/cactus/cactus_smol.png").convert_alpha()
     sand_img = pygame.image.load("./imegs/textures/sand.png").convert()
-    sky_img = pygame.image.load("./imegs/textures/sky.png").convert()
+    sky_img = pygame.image.load("./imegs/textures/nebo.png").convert()
 else:
     dinosaur_img = pygame.image.load("./imegs/dino/dino_k_new_Year.png").convert_alpha()
     cactus_img = pygame.image.load("./imegs/cactus/cactus_big_new_Year.png").convert_alpha()
     small_cactus_img = pygame.image.load("./imegs/cactus/cactus_smol_new_Year.png").convert_alpha()
     sand_img = pygame.image.load("./imegs/textures/sand_new_Year.png").convert()
-    sky_img = pygame.image.load("./imegs/textures/sky_new_Year.png").convert()
-
+    sky_img = pygame.image.load("./imegs/textures/nebo_new_Year.png").convert()
 sky_img = pygame.transform.scale(sky_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 restart_img = pygame.image.load("./imegs/buttons/restart.png").convert()
 pause_img = pygame.image.load("./imegs/buttons/pause.png").convert()
@@ -35,8 +34,6 @@ resume_img = pygame.image.load("./imegs/buttons/enter.png").convert()
 menu_img = pygame.image.load("./imegs/buttons/dth.png").convert()
 music_on_img = pygame.image.load("./imegs/buttons/musik_on.png").convert()
 music_off_img = pygame.image.load("./imegs/buttons/musik_off.png").convert()
-egg_cheat = pygame.image.load("./imegs/buttons/eggor_cheat.png").convert_alpha()
-dont_cheat = pygame.image.load("./imegs/buttons/dont_cheat.png").convert_alpha()
 
 # music
 jump_sound = pygame.mixer.Sound("./sounds/jamp.mp3")
@@ -52,7 +49,6 @@ clock = pygame.time.Clock()
 
 debag = True
 global_debag = True
-
 
 def draw_text(text, size, color, x, y, align="topleft"):
     font = pygame.font.Font(font1, size)
@@ -91,18 +87,10 @@ music_btn = Picture(music_state_img, (SCREEN_WIDTH - music_state_img.get_width()
                     (music_state_img.get_height() - 10), music_state_img.get_width(),
                     music_state_img.get_height())
 
-egg_cheat_btn = Picture(music_state_img, (SCREEN_WIDTH - 67),
-                        (music_state_img.get_height() - 10), music_state_img.get_width(),
-                        music_state_img.get_height())
-dont_cheat_btn = Picture(music_state_img, (SCREEN_WIDTH - 67),
-                         (music_state_img.get_height() - 10), music_state_img.get_width(),
-                         music_state_img.get_height())
-
 countdown_timer = 0
 show_countdown = True
 resume_timer = 0
 paused = False
-cheat = False
 pause_timer = 0
 pause_cooldown = False
 
@@ -123,22 +111,6 @@ def switch_btn_size(btn_name, is_show):
         btn_name.rect.size = (0, 0)
 
 
-def draw_cheat_screen():
-    global pause_timer, cheat, pause_cooldown
-    mw.blit(darken_surface, (0, 0))
-    mw.blit(egg_cheat, (SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 - 82))
-
-    pause_timer -= 1 / 60
-    if pause_timer <= 0:
-        pause_timer = 0
-        pause_cooldown = True
-
-    if not cheat:
-        pause_cooldown = False
-        pause_timer = 3
-        cheat = True
-
-
 def draw_pause_screen():
     global pause_timer, paused, pause_cooldown
     mw.blit(darken_surface, (0, 0))
@@ -157,6 +129,7 @@ def draw_pause_screen():
         pause_cooldown = False
         pause_timer = 3
         paused = True
+
 
 
 def handle_resume_input():
@@ -201,29 +174,18 @@ restart_timer = 0
 paused_score = 0
 show_menu = True
 elapsed_time = 0
-while_egg = False
 
 
 def game_cicle():
     # noinspection PyGlobalUndefined
     global show_menu, game_on, score, high_score, paused_score, switch_btn_size, debag, show_countdown, resume_timer, \
-        music, silent_game_over, elapsed_time, jump_sound, music_btn, switch_music_btn, while_egg, cheat
+        music, silent_game_over, elapsed_time, jump_sound, music_btn, switch_music_btn
     show_menu = False
-
+    start_time = time.time()
     while not pygame.key.get_pressed()[pygame.K_ESCAPE] and game_on:
         mw.blit(sky_img, (0, 0))
         mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
         dinosaur.draw()
-
-        if while_egg:
-            draw_cheat_screen()
-            cheat = not cheat
-            if cheat:
-                show_countdown = False
-                resume_timer = 3
-            else:
-                show_countdown = True
-
         global game_over, paused, spawn_counter, next_cactus_time, restart_timer
         a = clock.get_fps()
         print(a)
@@ -264,6 +226,7 @@ def game_cicle():
                     dinosaur.x = 100  # Початкова позиція динозавра
                     dinosaur.y = SCREEN_HEIGHT - GROUND_HEIGHT - 40
 
+
                 from mysic_func import click_on_switch_music_btn
                 if paused:
                     click_on_switch_music_btn(switch_music_btn, event, 74)
@@ -290,9 +253,6 @@ def game_cicle():
                     from mysic_func import change_music_state
                     change_music_state(switch_music_btn)
 
-                if event.key == pygame.K_b:
-                    while_egg = False if while_egg else True
-
                 if global_debag:
                     if event.key == pygame.K_g:
                         game_over = True
@@ -309,6 +269,7 @@ def game_cicle():
                     if event.key == pygame.K_h:
                         with open("highscore.dat", "w"):
                             high_score = 0
+
 
         handle_resume_input()
 
@@ -329,13 +290,13 @@ def game_cicle():
             spawn_counter += 1
             if spawn_counter >= next_cactus_time:
                 if random.randint(0, 1) == 0:
-                    cactus = Cactus(SCREEN_WIDTH, cactus_img, random.randint(4, 13))
+                    cactus = Cactus(SCREEN_WIDTH, cactus_img, random.randint(5, 10))
                 else:
-                    cactus = Cactus(SCREEN_WIDTH, small_cactus_img, random.randint(4, 13))
+                    cactus = Cactus(SCREEN_WIDTH, small_cactus_img, random.randint(5, 10))
 
                 cacti.append(cactus)
                 spawn_counter = 0
-                next_cactus_time = random.randint(30, 120)
+                next_cactus_time = random.randint(60, 120)
 
             keys = pygame.key.get_pressed()
             from classes import music
@@ -417,6 +378,7 @@ def game_cicle():
         if restart_timer > 0:
             restart_timer -= 1 / 60
 
+
         if paused:
             switch_btn_size(music_btn, True)
             switch_btn_size(resume_btn, True)
@@ -428,6 +390,8 @@ def game_cicle():
                 cactus.draw()
 
             draw_pause_screen()
+
+
 
             from classes import switch_music_btn
             from mysic_func import create_switch_music_btn
