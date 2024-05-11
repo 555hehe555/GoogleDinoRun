@@ -19,20 +19,12 @@ music = True
 switch_music_btn = True
 menu_score = 0
 
-# def change_music_state():
-#     global musik, musik_state_img
-#     if musik:
-#         musik = False
-#         musik_state_img = musik_off_img
-#         print("a")
-#         return musik, musik_state_img
-#     else:
-#         musik = True
-#         musik_state_img = musik_on_img
-#         print("b")
-#         return musik, musik_state_img
 
-
+def draw_text(text, size, color, x, y, align="topleft"):
+    font = pygame.font.Font(font1, size)
+    label = font.render(text, True, color)
+    text_rect = label.get_rect(**{align: (x, y)})
+    mw.blit(label, text_rect)
 
 
 class Area():
