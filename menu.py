@@ -32,8 +32,8 @@ pygame.display.set_caption("Google Dino Run")
 running = True
 sand_offset = 0
 
-click_sounds.set_volume(click_volm / 100)
-switch_sounds.set_volume(switch_volm / 100)
+click_sound.set_volume(click_volm / 100)
+switch_sound.set_volume(switch_volm / 100)
 
 
 # Quit function
@@ -58,23 +58,30 @@ def switch_menu_func():
         switch_menu = menu
         create_menu_option()
 
+a = 0
+
 
 def create_settings_option():
+    global a
+
     from game_info import run_game_info
     from mysic_volm import start_mysic_volm_menu
     settings_menu._options = []
     settings_menu.append_option("Back to menu", switch_menu_func)
     settings_menu.append_option("Music settings", start_mysic_volm_menu)
     settings_menu.append_option("Game info", run_game_info)
-
+    a = 1
 
 # Add options to the menu
 def create_menu_option():
+    global a
+
     from GoogleDinoRun import game_cicle
     menu._options = []
     menu.append_option("Start Game", game_cicle)
     menu.append_option("Settings", switch_menu_func)
     menu.append_option("Quit", quit_game)
+    a = 2
 
 
 create_menu_option()
@@ -89,7 +96,7 @@ game_info_obg = Area(100, 190, 180, 20)
 
 
 def menu_run():
-    global running, music, music_btns, switch_music_btn, start_game_obg, quit_obg, game_cicle, quit_obg
+    global running, music, music_btns, switch_music_btn, start_game_obg, quit_obg, game_cicle, quit_obg, a
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -100,13 +107,13 @@ def menu_run():
                     running = False
                 if event.key == pygame.K_UP:
                     switch_menu.switch(-1)
-                    switch_sounds.play()
+                    switch_sound.play()
                 elif event.key == pygame.K_DOWN:
                     switch_menu.switch(1)
-                    switch_sounds.play()
+                    switch_sound.play()
                 elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
                     switch_menu.select()
-                    click_sounds.play()
+                    click_sound.play()
                 elif event.key == pygame.K_v:
                     from mysic_func import change_music_state
                     change_music_state(switch_music_btn)
@@ -114,28 +121,30 @@ def menu_run():
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 from mysic_func import click_on_switch_music_btn
                 click_on_switch_music_btn(switch_music_btn, event, 10)
-                if switch_menu == menu:
-                    if start_game_obg.collidepoint(event.pos[0], event.pos[1]):
-                        from GoogleDinoRun import game_cicle
-                        click_sounds.play()
-                        game_cicle()
-                    if quit_obg.collidepoint(event.pos[0], event.pos[1]):
-                        click_sounds.play()
-                        quit_game()
-                    if settings_obg.collidepoint(event.pos[0], event.pos[1]):
-                        click_sounds.play()
-                        switch_menu_func()
-
-                if switch_menu == settings_menu:
+                if True:
                     if back_to_menu_obg.collidepoint(event.pos[0], event.pos[1]):
-                        click_sounds.play()
-                        switch_menu_func()
+                        click_sound.play()
+                        # switch_menu_func()
+                        switch_menu.select()
                     if music_settings_obg.collidepoint(event.pos[0], event.pos[1]):
-                        click_sounds.play()
+                        click_sound.play()
                         start_mysic_volm_menu()
                     if game_info_obg.collidepoint(event.pos[0], event.pos[1]):
-                        click_sounds.play()
+                        click_sound.play()
                         run_game_info()
+                if True:
+                    if start_game_obg.collidepoint(event.pos[0], event.pos[1]):
+                        from GoogleDinoRun import game_cicle
+                        click_sound.play()
+                        game_cicle()
+                    if quit_obg.collidepoint(event.pos[0], event.pos[1]):
+                        click_sound.play()
+                        quit_game()
+                    if settings_obg.collidepoint(event.pos[0], event.pos[1]):
+                        click_sound.play()
+                        switch_menu_func()
+
+
 
         mw.blit(sky_img, (0, 0))
         mw.blit(sand_img, (0, SCREEN_HEIGHT - GROUND_HEIGHT - SAND_HEIGHT + sand_offset))
@@ -148,7 +157,7 @@ def menu_run():
         for i, option_surface in enumerate(switch_menu._options):
             option_rect = option_surface.get_rect()
             option_rect.topleft = (100, 50 + i * 70)
-            if i == switch_menu._current_option_index:
+            if i == switch_menu.current_option_index:
                 pygame.draw.rect(mw, (0, 204, 204), option_rect)
             mw.blit(option_surface, option_rect)
 

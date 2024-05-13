@@ -37,8 +37,8 @@ music_on_img = pygame.image.load("./imegs/buttons/musik_on.png").convert()
 music_off_img = pygame.image.load("./imegs/buttons/musik_off.png").convert()
 
 jump_sound.set_volume(jamp_volm/100)
-background_sound.set_volume(bg_volm/100)
-sounds_sounds.set_volume(0)
+background_sound.set_volume(background_volm / 100)
+sounds_sound.set_volume(0)
 run_sound.set_volume(run_volm/100)
 
 mw = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -178,7 +178,7 @@ def game_cicle():
         dinosaur.draw()
         global game_over, paused, spawn_counter, next_cactus_time, restart_timer
         a = clock.get_fps()
-        # print(a)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -281,14 +281,14 @@ def game_cicle():
                     cactus = Cactus(SCREEN_WIDTH, cactus_img, speed_cactus)
                 else:
                     cactus = Cactus(SCREEN_WIDTH, small_cactus_img, speed_cactus)
-                print(speed_cactus)
+
                 cacti.append(cactus)
                 spawn_counter = 0
                 next_cactus_time = random.randint(30, 150)
 
             keys = pygame.key.get_pressed()
             from classes import music
-            # print(music)
+
 
             if not dinosaur.jumping and run_sound.get_num_channels() == 0 and music:
                 run_sound.play()
@@ -305,8 +305,8 @@ def game_cicle():
                     else:
                         game_over = False
 
-            if sounds_sounds.get_num_channels() == 0:
-                sounds_sounds.play()
+            if sounds_sound.get_num_channels() == 0:
+                sounds_sound.play()
                 paused_score += 0.5
                 speed_cactus += 1
 

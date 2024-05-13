@@ -106,7 +106,7 @@ class Menu:
     def __init__(self):
         self._options = []
         self._callbacks = []
-        self._current_option_index = 0
+        self.current_option_index = 0
 
     def append_option(self, option, callback):
         option_surface = pygame.font.Font(font1, 20).render(option, True, (83, 83, 83))
@@ -114,7 +114,7 @@ class Menu:
         self._callbacks.append(callback)
 
     def switch(self, direction):
-        self._current_option_index = max(0, min(self._current_option_index + direction, len(self._options) - 1))
+        self.current_option_index = max(0, min(self.current_option_index + direction, len(self._options) - 1))
 
     def select(self):
-        self._callbacks[self._current_option_index]()
+        self._callbacks[self.current_option_index]()
